@@ -51,38 +51,77 @@ function main(){
     controls = new OrbitControls(camera, rendererDiv);
     helper.setupControls(controls);
 
-    // an array of objects whose rotation to update
-    //const objects = [];
-
-    // create body and scene graph
+    // create objects & add to scene
     const robotBody = new THREE.Object3D();
     const foot1 = new THREE.Object3D();
     const foot2 = new THREE.Object3D();
     scene.add(robotBody, foot1, foot2);
-    const bodyGeometry = new THREE.BoxGeometry(2, 5, 2);
-    const armGeometry = new THREE.BoxGeometry(1, 7, 2);
-    const footGeometry = new THREE.BoxGeometry(2, 6, 2);
-    const toeGeometry = new THREE.BoxGeometry(1, 1, 2);
 
-    
+    // create geometries for bodies
+    /*
+    const robotBodyGeometry = new THREE.BoxGeometry(1, 2.5, 1);
+    const headGeometry = new THREE.BoxGeometry(.5, 1.5, .5);
+    const armGeometry = new THREE.BoxGeometry(.5, 3.5, 1);
+    const footGeometry = new THREE.BoxGeometry(1, 3, 1);
+    const toeGeometry = new THREE.BoxGeometry(.5, .5, 1);
+    */
+
+    const armGeometry = new THREE.BoxGeometry(.5, 3.5, 1);
+
+    // create material for bodies
     const boxMaterial = new THREE.MeshPhongMaterial({emissive: 0x111111});
-    const bodyMesh = new THREE.Mesh(bodyGeometry, boxMaterial);
-    //bodyMesh.scale.set(5, 5, 5);
-    const arm1Mesh = new THREE.Mesh(armGeometry, boxMaterial);
-    arm1Mesh.position.x = 20;
-    arm1Mesh.position.y = 20;
+
+    // create meshes & add to scene
+    /*
+    const robotBodyMesh = new THREE.Mesh(robotBodyGeometry, boxMaterial);
+    const headMesh = new THREE.Mesh(headGeometry, boxMaterial)
+    const arm1Mesh = new THREE.Mesh(armGeometry, boxMaterial);    
     const arm2Mesh = new THREE.Mesh(armGeometry, boxMaterial);
-    arm2Mesh.position.x = 20;
-    arm2Mesh.position.y = 20;
     const foot1Mesh = new THREE.Mesh(footGeometry, boxMaterial);
     const foot2Mesh = new THREE.Mesh(footGeometry, boxMaterial);
     const toe1Mesh = new THREE.Mesh(toeGeometry, boxMaterial);
     const toe2Mesh = new THREE.Mesh(toeGeometry, boxMaterial);
     foot1.add(foot1Mesh, toe1Mesh);
     foot2.add(foot2Mesh, toe2Mesh);
-    robotBody.add(bodyMesh,arm1Mesh, arm2Mesh, foot1, foot2);
-    //objects.push(bodyMesh);
+    robotBody.add(robotBodyMesh, headMesh, arm1Mesh, arm2Mesh, foot1, foot2);
+    */
 
+    const arm1Mesh = new THREE.Mesh(armGeometry, boxMaterial); 
+    const arm2Mesh = new THREE.Mesh(armGeometry, boxMaterial); 
+    robotBody.add(arm1Mesh,arm2Mesh); 
+
+    // create 4x4 matrices for transformations
+    arm1Mesh.matrix.set(1, 2, 3, 4,
+      1, 2, 3, 4,
+      1, 2, 3, 4,
+      1, 2, 3, 4 )
+    arm1Mesh.updateMatrix();   
+      
+    
+    const arm2PosSetup = new THREE.Matrix4();
+    arm2PosSetup.set( 11, 12, 13, 14,
+       21, 22, 23, 24,
+       31, 32, 33, 34,
+       41, 42, 43, 44 );
+
+    const foot1PosSetup = new THREE.Matrix4();
+    foot1PosSetup.set( 11, 12, 13, 14,
+       21, 22, 23, 24,
+       31, 32, 33, 34,
+       41, 42, 43, 44 );
+
+    const foot2PosSetup = new THREE.Matrix4();
+    foot2PosSetup.set( 11, 12, 13, 14,
+       21, 22, 23, 24,
+       31, 32, 33, 34,
+       41, 42, 43, 44 );
+   
+    const headPosSetup = new THREE.Matrix4();
+    headPosSetup.set( 11, 12, 13, 14,
+       21, 22, 23, 24,
+       31, 32, 33, 34,
+       41, 42, 43, 44 );
+   
 
     // start the animation loop (async)
     var wid = new RenderWidget(rendererDiv, renderer, camera, scene, controls);
