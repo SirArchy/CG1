@@ -92,8 +92,9 @@ function main(){
     arm2Joint.add(arm2Mesh);
     headJoint.add(headMesh);
     robotBody.add(robotBodyMesh);
+    
 
-    // create 4x4 matrices for transformations
+    // change matrixWorld for first setup
     arm1Mesh.matrixWorld.set(1, 0, 0, 2,
       0, 1, 0, 0.5,
       0, 0, 1, 0,
@@ -166,10 +167,31 @@ function main(){
       0, 0, 0, 1,)
       headJoint.updateMatrixWorld(); 
       
+      headJoint.parent
 
     // start the animation loop (async)
     var wid = new RenderWidget(rendererDiv, renderer, camera, scene, controls);
     wid.animate();
+
+    // implement visible traversal of nodes
+    const selectedMaterial = new THREE.MeshPhongMaterial({ color: 0x989796 });
+    document.addEventListener("keydown", (evt) => {
+      // implement some kind of stack to know what the previous selected node was
+      switch (evt.key) {  
+      case  "w":
+        // select parent node
+        robotBodyMesh.material = selectedMaterial;
+      case "a": 
+         // select previous sibling node
+
+      case "s": 
+         // select first child node
+
+      case "d":
+         // select next sibling node
+
+      }
+    });
 }
 
 // call main entrypoint
