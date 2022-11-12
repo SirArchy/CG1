@@ -51,6 +51,10 @@ function main(){
     controls = new OrbitControls(camera, rendererDiv);
     helper.setupControls(controls);
 
+
+
+    // NEW STUFF
+
     // create objects & add to scene
     const robotBody = new THREE.Object3D();
     const arm1Joint = new THREE.Object3D();

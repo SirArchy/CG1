@@ -5,9 +5,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import type * as utils from './lib/utils';
 import RenderWidget from './lib/rendererWidget';
 import { Application, createWindow } from './lib/window';
+import { createTeddyBear, setupCube } from './helper';
 
 // helper lib, provides exercise dependent prewritten Code
 import * as helper from './helper';
+import { Scene } from 'three';
+import { setupScene } from '../../cg1_exercise_0/src/helper';
 
 
 function callback(changed: utils.KeyValuePair<helper.Settings>){
@@ -43,6 +46,23 @@ function main(){
   settings = new helper.Settings();
   helper.createGUI(settings);
   settings.addCallback(callback);
+
+
+  //NEW STUFF
+
+
+
+
+  // Create scene
+  var scene = new THREE.Scene();
+  setupScene(scene);
+  scene.background = new THREE.Color(0xFFFFFF)
+  setupCube(scene);
+
+  // Create Teddybear
+  createTeddyBear();
+  
+
 }
 
 // call main entrypoint
