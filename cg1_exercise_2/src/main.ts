@@ -5,17 +5,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import type * as utils from './lib/utils';
 import RenderWidget from './lib/rendererWidget';
 import { Application, createWindow } from './lib/window';
-import { createTeddyBear, setupCube } from './helper';
+import { createTeddyBear, setupCube, Settings } from './helper';
 
 // helper lib, provides exercise dependent prewritten Code
 import * as helper from './helper';
-import { Scene } from 'three';
+import { Camera, Scene } from 'three';
 import { setupScene } from '../../cg1_exercise_0/src/helper';
-
-
-function callback(changed: utils.KeyValuePair<helper.Settings>){
-
-}
 
 /*******************************************************************************
  * Main entrypoint.
@@ -29,7 +24,7 @@ function main(){
   root.setLayoutColumns(["1fr", "1fr", "1fr"]);
   root.setLayoutRows(["100%"]);
 
-
+  // create sceneDiv
   var screenDiv = createWindow("screen");
   root.appendChild(screenDiv);
 
@@ -50,17 +45,112 @@ function main(){
 
   //NEW STUFF
 
+  // CREATE SCREEN SPACE
 
+  // Create scence
+  var screenScene = new Scene
+  setupScene(screenScene);
+  screenScene.background = new THREE.Color(0xFFFFFF)
+  //setupCube(sceneScreen);
 
+  // Create camera
+  var screenCamera = new THREE.PerspectiveCamera();
+  // Uses ./helper.ts for setting up the camera.
+  helper.setupCamera(screenCamera, screenScene, settings.near, settings.far, settings.fov);
 
-  // Create scene
-  var scene = new THREE.Scene();
-  setupScene(scene);
-  scene.background = new THREE.Color(0xFFFFFF)
-  setupCube(scene);
+  // Create controls
+  var controls = new OrbitControls(screenCamera, screenDiv);
+  // Uses ./helper.ts for setting up the controls
+  helper.setupControls(controls);
 
   // Create Teddybear
-  createTeddyBear();
+  const teddy = createTeddyBear();
+  screenScene.add(teddy)
+
+  // Create renderer
+  var renderer = new THREE.WebGLRenderer({
+   antialias: true,  // to enable anti-alias and get smoother output
+  });
+
+
+  // Defines the callback that should get called
+  // whenever the settings change (i.e. via GUI)
+  function callback(changed: utils.KeyValuePair<Settings>) {
+      switch (changed.key) {
+        case 'rotateX':
+          teddy.rotation.x = changed.value
+          break;
+        case 'rotateY':
+          teddy.rotation.y = changed.value
+          break;
+        case 'rotateZ':
+          teddy.rotation.z = changed.value
+          break;
+        case 'translateX': //does not work properly
+          if (changed.value === 0) {
+            teddy.position.set(0,0,0)
+          }
+          else {
+            teddy.translateX(changed.value)
+          }
+          break;
+        case 'translateY': //does not work properly
+          if (changed.value === 0) {
+            teddy.position.set(0,0,0)
+          }
+          else {
+            teddy.translateY(changed.value)
+          }
+          break;
+        case 'translateZ':  //does not work properly
+          if (changed.value === 0) { 
+            teddy.position.set(0,0,0)
+          }
+          else {
+            teddy.translateZ(changed.value)
+          }
+          break;
+      }
+  }      
+
+  // Create renderWidget
+  var wid = new RenderWidget(screenDiv, renderer, screenCamera, screenScene, controls);
+  // Start the draw loop (this call is async).
+  wid.animate();
+
+
+  // CREATE WORLD SPACE
+
+  // Create scence
+  var worldScene = new Scene
+  setupScene(worldScene);
+  worldScene.background = new THREE.Color(0xFFFFFF)
+  //setupCube(sceneScreen);
+
+  // Create camera
+  var worldCamera = new THREE.PerspectiveCamera();
+  // Uses ./helper.ts for setting up the camera.
+  helper.setupCamera(worldCamera, worldScene, settings.near, settings.far, settings.fov);
+
+  // Create controls
+  var controls = new OrbitControls(worldCamera, worldDiv);
+  // Uses ./helper.ts for setting up the controls
+  helper.setupControls(controls);
+
+  // Create Teddybear
+  const teddy2 = createTeddyBear();
+  worldScene.add(teddy2)
+
+  // Create renderer
+  var renderer = new THREE.WebGLRenderer({
+   antialias: true,  // to enable anti-alias and get smoother output
+  });
+
+  var wid = new RenderWidget(worldDiv, renderer, worldCamera, worldScene, controls);
+  // Start the draw loop (this call is async)
+  wid.animate();
+
+
   
 
 }
