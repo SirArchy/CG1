@@ -12,6 +12,43 @@ import * as helper from './helper';
 import { Camera, Scene } from 'three';
 import { setupScene } from '../../cg1_exercise_0/src/helper';
 
+const teddy = createTeddyBear();
+// Defines the callback that should get called
+// whenever the settings change (i.e. via GUI)
+function callback(changed: utils.KeyValuePair<Settings>) {
+  switch (changed.key) {
+    case 'rotateX':
+      teddy.rotation.x = changed.value
+      break;
+    case 'rotateY':
+      teddy.rotation.y = changed.value
+      break;
+    case 'rotateZ':
+      teddy.rotation.z = changed.value
+      break;
+    case 'translateX': //does not work properly
+      teddy.translateX(changed.value)
+      break;
+    case 'translateY': //does not work properly
+      teddy.translateY(changed.value)
+      break;
+    case 'translateZ':  //does not work properly
+      teddy.translateZ(changed.value)
+      break;
+    case 'near':
+      //camera updateProjectionMatrix
+      break;
+    case 'near':
+
+      //camera updateProjectionMatrix
+      break;
+    case 'near':
+
+      //camera updateProjectionMatrix
+      break;
+  }
+}
+
 /*******************************************************************************
  * Main entrypoint.
  ******************************************************************************/
@@ -63,55 +100,13 @@ function main(){
   // Uses ./helper.ts for setting up the controls
   helper.setupControls(controls);
 
-  // Create Teddybear
-  const teddy = createTeddyBear();
+  // add Teddybear
   screenScene.add(teddy)
 
   // Create renderer
   var renderer = new THREE.WebGLRenderer({
    antialias: true,  // to enable anti-alias and get smoother output
-  });
-
-
-  // Defines the callback that should get called
-  // whenever the settings change (i.e. via GUI)
-  function callback(changed: utils.KeyValuePair<Settings>) {
-      switch (changed.key) {
-        case 'rotateX':
-          teddy.rotation.x = changed.value
-          break;
-        case 'rotateY':
-          teddy.rotation.y = changed.value
-          break;
-        case 'rotateZ':
-          teddy.rotation.z = changed.value
-          break;
-        case 'translateX': //does not work properly
-          if (changed.value === 0) {
-            teddy.position.set(0,0,0)
-          }
-          else {
-            teddy.translateX(changed.value)
-          }
-          break;
-        case 'translateY': //does not work properly
-          if (changed.value === 0) {
-            teddy.position.set(0,0,0)
-          }
-          else {
-            teddy.translateY(changed.value)
-          }
-          break;
-        case 'translateZ':  //does not work properly
-          if (changed.value === 0) { 
-            teddy.position.set(0,0,0)
-          }
-          else {
-            teddy.translateZ(changed.value)
-          }
-          break;
-      }
-  }      
+  });      
 
   // Create renderWidget
   var wid = new RenderWidget(screenDiv, renderer, screenCamera, screenScene, controls);
@@ -137,10 +132,6 @@ function main(){
   // Uses ./helper.ts for setting up the controls
   helper.setupControls(controls);
 
-  // Create Teddybear
-  const teddy2 = createTeddyBear();
-  worldScene.add(teddy2)
-
   // Create renderer
   var renderer = new THREE.WebGLRenderer({
    antialias: true,  // to enable anti-alias and get smoother output
@@ -149,8 +140,6 @@ function main(){
   var wid = new RenderWidget(worldDiv, renderer, worldCamera, worldScene, controls);
   // Start the draw loop (this call is async)
   wid.animate();
-
-
   
 
 }
