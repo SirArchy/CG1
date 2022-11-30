@@ -13,6 +13,7 @@ import { Camera, Scene } from 'three';
 import { setupScene } from '../../cg1_exercise_0/src/helper';
 
 const teddy = createTeddyBear();
+
 // Defines the callback that should get called
 // whenever the settings change (i.e. via GUI)
 function callback(changed: utils.KeyValuePair<Settings>) {
@@ -26,14 +27,14 @@ function callback(changed: utils.KeyValuePair<Settings>) {
     case 'rotateZ':
       teddy.rotation.z = changed.value
       break;
-    case 'translateX': //does not work properly
-      teddy.translateX(changed.value)
+    case 'translateX': 
+      teddy.position.x = changed.value
       break;
-    case 'translateY': //does not work properly
-      teddy.translateY(changed.value)
+    case 'translateY': 
+      teddy.position.y = changed.value
       break;
-    case 'translateZ':  //does not work properly
-      teddy.translateZ(changed.value)
+    case 'translateZ':  
+      teddy.position.z = changed.value
       break;
     case 'near':
       //camera updateProjectionMatrix
@@ -79,9 +80,6 @@ function main(){
   helper.createGUI(settings);
   settings.addCallback(callback);
 
-
-  //NEW STUFF
-
   // CREATE SCREEN SPACE
 
   // Create scence
@@ -94,6 +92,7 @@ function main(){
   var screenCamera = new THREE.PerspectiveCamera();
   // Uses ./helper.ts for setting up the camera.
   helper.setupCamera(screenCamera, screenScene, settings.near, settings.far, settings.fov);
+  const cameraHelper = new THREE.CameraHelper(screenCamera);
 
   // Create controls
   var controls = new OrbitControls(screenCamera, screenDiv);
@@ -120,6 +119,7 @@ function main(){
   var worldScene = new Scene
   setupScene(worldScene);
   worldScene.background = new THREE.Color(0xFFFFFF)
+  worldScene.add(cameraHelper)
   //setupCube(sceneScreen);
 
   // Create camera
@@ -133,16 +133,16 @@ function main(){
   helper.setupControls(controls);
 
   // Create renderer
-  var renderer = new THREE.WebGLRenderer({
-   antialias: true,  // to enable anti-alias and get smoother output
-  });
+  var renderer2 = new THREE.WebGLRenderer({
+    antialias: true,  // to enable anti-alias and get smoother output
+   }); 
 
-  var wid = new RenderWidget(worldDiv, renderer, worldCamera, worldScene, controls);
-  // Start the draw loop (this call is async)
-  wid.animate();
-  
+  // Create renderWidget
+  var wid2 = new RenderWidget(worldDiv, renderer2, worldCamera, worldScene, controls);
+  // Start the draw loop (this call is async).
+  wid2.animate();
 
-}
+  }
 
 // call main entrypoint
 main();
