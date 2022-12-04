@@ -17,8 +17,32 @@ import basicFragmentShader from './shader/basic.f.glsl?raw';
 // defines callback that should get called whenever the
 // params of the settings get changed (eg. via GUI)
 function callback(changed: utils.KeyValuePair<helper.Settings>) {
-
+  switch (changed.key) {
+    case 'shader':
+      break;
+    case 'ambient_reflectance':
+      break;
+    case 'ambient_color':
+      break;
+    case 'diffuse_reflectance':
+      break;
+    case 'diffuse_color':
+      break;
+    case 'specular_reflectance':
+      break;
+    case 'specular_color':
+      break;
+    case 'magnitude':
+      break;
+    case 'lightX':
+      break; 
+    case 'lightY':
+      break;  
+    case 'lightZ':
+      break;       
+  }
 }
+
 
 // feel free to declar certain variables outside the main function to change them somewhere else
 // e.g. settings, light or material
@@ -65,6 +89,21 @@ function main(){
   // create controls
   var controls = new OrbitControls(camera, rendererDiv);
   helper.setupControls(controls);
+
+  // implement basic shader
+
+
+  // implement normal shader
+
+
+  // implement toon shader
+
+
+  // implement diffuse shader
+
+
+  // implement phong shader
+
 
   // fill the renderDiv. In RenderWidget happens all the magic.
   // It handles resizes, adds the fps widget and most important defines the main animate loop.
