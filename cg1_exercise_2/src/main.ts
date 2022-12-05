@@ -1,148 +1,163 @@
 // external dependencies
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 // local from us provided utilities
 import type * as utils from './lib/utils';
 import RenderWidget from './lib/rendererWidget';
-import { Application, createWindow } from './lib/window';
-import { createTeddyBear, setupCube, Settings } from './helper';
+import {Application, createWindow} from './lib/window';
 
-// helper lib, provides exercise dependent prewritten Code
+// helper lib, provides exercise dependent pre written Code
 import * as helper from './helper';
-import { Camera, Scene } from 'three';
-import { setupScene } from '../../cg1_exercise_0/src/helper';
+import {createCanonicalCamera, createTeddyBear, setupPlanes, toggleClippingPlane, updateCanonical} from './helper';
 
-const teddy = createTeddyBear();
-
-// Defines the callback that should get called
-// whenever the settings change (i.e. via GUI)
-function callback(changed: utils.KeyValuePair<Settings>) {
-  switch (changed.key) {
-    case 'rotateX':
-      teddy.rotation.x = changed.value
-      break;
-    case 'rotateY':
-      teddy.rotation.y = changed.value
-      break;
-    case 'rotateZ':
-      teddy.rotation.z = changed.value
-      break;
-    case 'translateX': 
-      teddy.position.x = changed.value
-      break;
-    case 'translateY': 
-      teddy.position.y = changed.value
-      break;
-    case 'translateZ':  
-      teddy.position.z = changed.value
-      break;
-    case 'near':
-      //camera updateProjectionMatrix
-      break;
-    case 'near':
-
-      //camera updateProjectionMatrix
-      break;
-    case 'near':
-
-      //camera updateProjectionMatrix
-      break;
-  }
+function callback(changed: utils.KeyValuePair<helper.Settings>) {
+    switch (changed.key) {
+        case "rotateX": {
+            bear.rotation.x = changed.value
+            break
+        }
+        case  "rotateY": {
+            bear.rotation.y = changed.value
+            break
+        }
+        case  "rotateZ": {
+            bear.rotation.z = changed.value
+            break
+        }
+        case "translateX": {
+            bear.position.x = changed.value
+            break
+        }
+        case "translateY": {
+            bear.position.y = changed.value
+            break
+        }
+        case "translateZ": {
+            bear.position.z = changed.value
+            break
+        }
+        case "near": {
+            screenCamera.near = changed.value
+            break
+        }
+        case "far": {
+            screenCamera.far = changed.value
+            break
+        }
+        case "fov": {
+            screenCamera.fov = changed.value
+            break
+        }
+        case "planeX0":
+        case "planeX1":
+        case "planeY0":
+        case "planeY1":
+        case "planeZ0":
+        case "planeZ1":
+            toggleClippingPlane(rendererCanonical, changed.key)
+            break
+    }
+    screenCamera.updateProjectionMatrix()
+    cameraHelper.update()
+    updateCanonical(bear, sceneCanonical, screenCamera)
 }
 
 /*******************************************************************************
  * Main entrypoint.
  ******************************************************************************/
 
-var settings: helper.Settings;
+let settings: helper.Settings;
+let screenCamera: THREE.PerspectiveCamera;
+let worldCamera: THREE.PerspectiveCamera;
+let canonicalCamera: THREE.OrthographicCamera;
+let cameraHelper: THREE.CameraHelper
+let bear: THREE.Object3D
+let scene = new THREE.Scene();
+let sceneCanonical = new THREE.Scene();
 
-function main(){
-  var root = Application("Camera");
-  root.setLayout([["world", "canonical", "screen"]]);
-  root.setLayoutColumns(["1fr", "1fr", "1fr"]);
-  root.setLayoutRows(["100%"]);
-
-  // create sceneDiv
-  var screenDiv = createWindow("screen");
-  root.appendChild(screenDiv);
-
-  // create RenderDiv
-  var worldDiv = createWindow("world");
-  root.appendChild(worldDiv);
-
-  // create canonicalDiv
-  var canonicalDiv = createWindow("canonical");
-  root.appendChild(canonicalDiv);
-
-  // ---------------------------------------------------------------------------
-  // create Settings and create GUI settings
-  settings = new helper.Settings();
-  helper.createGUI(settings);
-  settings.addCallback(callback);
-
-  // CREATE SCREEN SPACE
-
-  // Create scence
-  var screenScene = new Scene
-  setupScene(screenScene);
-  screenScene.background = new THREE.Color(0xFFFFFF)
-  //setupCube(sceneScreen);
-
-  // Create camera
-  var screenCamera = new THREE.PerspectiveCamera();
-  // Uses ./helper.ts for setting up the camera.
-  helper.setupCamera(screenCamera, screenScene, settings.near, settings.far, settings.fov);
-  const cameraHelper = new THREE.CameraHelper(screenCamera);
-
-  // Create controls
-  var controls = new OrbitControls(screenCamera, screenDiv);
-  // Uses ./helper.ts for setting up the controls
-  helper.setupControls(controls);
-
-  // add Teddybear
-  screenScene.add(teddy)
-
-  // Create renderer
-  var renderer = new THREE.WebGLRenderer({
-   antialias: true,  // to enable anti-alias and get smoother output
-  });      
-
-  // Create renderWidget
-  var wid = new RenderWidget(screenDiv, renderer, screenCamera, screenScene, controls);
-  // Start the draw loop (this call is async).
-  wid.animate();
+let rendererCanonical = new THREE.WebGLRenderer({
+    antialias: true
+});
+setupPlanes(rendererCanonical)
 
 
-  // CREATE WORLD SPACE
+function main() {
+    let root = Application("Camera");
+    root.setLayout([["world", "canonical", "screen"]]);
+    root.setLayoutColumns(["1fr", "1fr", "1fr"]);
+    root.setLayoutRows(["100%"]);
 
-  // Create scence
-  var worldScene = new Scene
-  setupScene(worldScene);
-  worldScene.background = new THREE.Color(0xFFFFFF)
-  worldScene.add(cameraHelper)
-  //setupCube(sceneScreen);
+    let screenDiv = createWindow("screen");
+    root.appendChild(screenDiv);
 
-  // Create camera
-  var worldCamera = new THREE.PerspectiveCamera();
-  // Uses ./helper.ts for setting up the camera.
-  helper.setupCamera(worldCamera, worldScene, settings.near, settings.far, settings.fov);
+    // create RenderDiv
+    let worldDiv = createWindow("world");
+    root.appendChild(worldDiv);
 
-  // Create controls
-  var controls = new OrbitControls(worldCamera, worldDiv);
-  // Uses ./helper.ts for setting up the controls
-  helper.setupControls(controls);
+    // create canonicalDiv
+    let canonicalDiv = createWindow("canonical");
+    root.appendChild(canonicalDiv);
 
-  // Create renderer
-  var renderer2 = new THREE.WebGLRenderer({
-    antialias: true,  // to enable anti-alias and get smoother output
-   }); 
+    const rendererScreen = new THREE.WebGLRenderer({
+        antialias: true
+    });
 
-  // Create renderWidget
-  var wid2 = new RenderWidget(worldDiv, renderer2, worldCamera, worldScene, controls);
-  // Start the draw loop (this call is async).
-  wid2.animate();
+    const rendererWorld = new THREE.WebGLRenderer({
+        antialias: true
+    });
 
-  }
+    // set scene background
+    scene.background = new THREE.Color();
+
+    // create bear
+    bear = createTeddyBear()
+    scene.add(bear)
+
+    // clone canonical scene from regular scene
+    sceneCanonical = scene.clone()
+
+    // create screen camera
+    screenCamera = new THREE.PerspectiveCamera();
+    helper.setupCamera(screenCamera, scene, 1, 5, 40);
+
+    // create screenCamera helper
+    cameraHelper = new THREE.CameraHelper(screenCamera)
+    scene.add(cameraHelper)
+
+    // create world camera
+    worldCamera = new THREE.PerspectiveCamera();
+    helper.setupCamera(worldCamera, scene, 1, 20, 40);
+
+    // create canonical camera
+    canonicalCamera = createCanonicalCamera()
+
+    // ---------------------------------------------------------------------------
+    // create Settings and create GUI settings
+    settings = new helper.Settings();
+    helper.createGUI(settings);
+    settings.addCallback(callback);
+
+    // animate scenes
+    new RenderWidget(screenDiv, rendererScreen, screenCamera, scene).animate();
+    new RenderWidget(worldDiv, rendererWorld, worldCamera, scene).animate();
+    new RenderWidget(canonicalDiv, rendererCanonical, canonicalCamera, sceneCanonical).animate();
+
+    // create orbit controls
+    let screenControls = new OrbitControls(screenCamera, screenDiv);
+    helper.setupControls(screenControls);
+    helper.setupControls(new OrbitControls(worldCamera, worldDiv));
+    helper.setupControls(new OrbitControls(canonicalCamera, canonicalDiv));
+
+    //update initial canonical view and cameraHelper
+    updateCanonical(bear, sceneCanonical, screenCamera)
+    cameraHelper.update()
+
+    // update canonical view on screen camera change
+    screenControls.addEventListener("change", () => {
+        cameraHelper.update()
+        updateCanonical(bear, sceneCanonical, screenCamera)
+    })
+}
 
 // call main entrypoint
 main();
